@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片上传</title>
+</head>
+<body>
+    <h3>点击选择需要上传的图片</h3>
+    <hr>
+    <!-- 这里不使用ajax，知识表单的原始提交 -->
+    <form action="/upload" enctype="multipart/form-data" method="POST">
+      <label for="upload">上传图片：</label>
+      <!-- 这个name属性的值要和后端的对应 accept="image/*"表示所有的图片文件，分开写使用都好分隔image/png,image/jpeg,image/jpg -->
+      <input type="file" id="upload" name="file" accept="image/*">
+      <button type="submit">上传</button>
+    </form>
+    <!-- 使用ajax -->
+</body>
+</html>

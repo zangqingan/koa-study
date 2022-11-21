@@ -1,0 +1,30 @@
+{
+  "name": "koa2-study",
+  "version": "1.0.0",
+  "description": "koa2的学习记录",
+  "main": "./src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "cross-env NODE_ENV=dev nodemon ./src/app.js",
+    "prd": "cross-env NODE_ENV=production  pm2 ./src/app.js"
+  },
+  "author": "zangqingan",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "cross-env": "^7.0.2",
+    "dotenv": "^16.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
+    "koa-json-error": "^3.1.2",
+    "koa-jwt": "^4.0.0",
+    "koa-logger": "^3.2.1",
+    "koa-morgan": "^1.0.1",
+    "koa-multer": "^1.0.2",
+    "koa-parameter": "^3.0.1",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "mongoose": "^5.13.9"
+  }
+}
