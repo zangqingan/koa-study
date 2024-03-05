@@ -347,7 +347,7 @@ app.use(async (ctx, next) => { await next(); })
 
 # 四、常用Koa中间件学习
 
-## 3.1  dotenv
+## 3.1 dotenv
 它是一个零依赖模块，它将环境变量从.env文件加载到process.env变量中。
 安装:`$ npm install dotenv --save`、然后在根目录下新建一个 .env文件。
 
@@ -369,22 +369,28 @@ require('dotenv').config({
 
 ```
 
-## 3.2 koa环境变量设置中间件
-和express是一样的在window平台上通过cross-env中间件设置环境变量。
+## 3.2 cross-env
+和原生node、express是一样的在window平台上通过cross-env中间件设置环境变量。
 当设置环境变量为 NODE_ENV=production 时，易造成 Windows 命令的阻塞。
 在运行时，脚本通过检查 process.env.NODE_ENV 查找该值。通过 NODE_ENV 的值 判断服务器应在 开发 还是 生产模式下运行。
-本质是通过process的env属性对象获取自己设置的变量值,可以给NODE环境设置一个变量，通过process.env.xxxxx来获取。
-安装:npm install --save-dev cross-env,
-使用:在包管理文件package.json文件的scripts选项中设置。
+本质是通过process的env属性对象获取自己设置的变量值,可以给NODE环境设置一个变量，就通过process.env.xxxxx来获取。
+安装:`$npm install --save-dev cross-env`
+```javaScript
+// 使用:在包管理文件package.json文件的scripts选项中设置。
  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "cross-env NODE_ENV=dev nodemon ./src/app.js",
     "prd": "cross-env NODE_ENV=production  pm2 ./src/app.js"
-  },
+  }
 
-## 3.3 koa跨域中间件
+```
+
+
+## 3.3 cors 跨域处理中间件
 koa也可以自己编写原生跨域中间件，本质其实就是设置http头部信息。
 不过一般使用社区提供的中间件
+1. 自定义跨越处理中间件
+```javaScript
 app.use(async (ctx, next) => {
     // 允许来自所有域名请求
     ctx.set("Access-Control-Allow-Origin", "*");
@@ -404,16 +410,26 @@ app.use(async (ctx, next) => {
     ctx.set("Access-Control-Max-Age", 300);
     await next();
 })
-第三方中间件跨域：kcors
-安装：$ npm install @koa/cors --save
-使用：引入注册即可
+
+
+```
+
+2. 第三方中间件跨域：kcors
+它是专门为koa准备的中间件、
+安装：`$ npm install @koa/cors --save`
+```javaScript
+// 引入注册即可使用
 const cors = require('@koa/cors')
 app.use(cors())
-一步简写：app.use(require('@koa/cors')())
-这种默认的配置一般就行了。
+// 一步简写
+app.use(require('@koa/cors')())
+
+这种默认的配置一般就行了它允许一下内容。
     origin: request Origin header
     allowMethods: GET,HEAD,PUT,POST,DELETE,PATCH
-可以传入一个配置对象，具体更细致的约束条件请查看官网。
+可以传入一个配置对象  options ，具体更细致的约束条件请查看官网。
+
+```
 
 ## 3.4 koa处理请求体中间件
 koa本身是不能获取前端传过来的请求体数据的，但是通过安装第三方插件即可实现。

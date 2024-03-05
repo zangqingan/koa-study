@@ -8,6 +8,7 @@ require('dotenv').config()
 // console.log('env is',process.env)
 // console.log('env is',process.env.APP_PORT)
 // console.log('env is',process.env.SECRET_KEY)
+console.log('env is',process.env.NODE_ENV)
 
 // 1.引入koa模块
 const Koa = require('koa')
