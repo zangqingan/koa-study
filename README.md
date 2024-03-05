@@ -610,42 +610,50 @@ app.use(async ctx => {
 人为抽离的一个功能，拿到路由分配的任务并执行，本质也是一个中间件(函数)。其实就是命中路由时对应的回调函数，它可以获取HTTP请求的参数即前端传过来的数据如分页信息，每一页数据总条数，路由参数，请求体等，处理业务逻辑对数据库进行curd操作，发送HTTP响应返回给前端如状态码，响应头，响应体等。
 每个资源的控制器分别存放controllers文件夹里的不同js文件中，将路由和具体实现分离出来。
 在使用es5时是定义一个一个函数并导出，而在使用es6后将这些函数封装成类和类方法来实现控制器，导出的是类的实例对象。
-同时对数据的 curd操作也是放到这里实现。
+同时对数据的 crud 操作也是放到这里实现。
 
 ## 3.10 koa操作数据库中间件
-和原生node和express一样在koa中也是通过第三方插件 mongoose 实现对mongodb数据库的操作。
-* 安装:npm i mongoose
-    //引入
+
+### 1.mongodb
+和原生node和express一样在koa中也是通过第三方插件 mongoose 实现对mongodb数据库的crud操作。
+安装:`$ npm i mongoose`、用法都是类似的、数据库的连接抽离出来、每一个集合放一个文件里。
+```JavaScript
+// 创建连接文件
+module.exports = async () => {
+    // 1.引入mongoose模块
     const mongoose = require('mongoose')
-    //建立链接  mongoose.connect(数据库地址,{配置对象},callback)
-    mongoose.connect('mongodb://127.0.0.1:27017/本地数据库名',{useNewUrlParser:true , useUnifiedTopology: true},err => {//输出数据库连接错误})
-这个配置一般会抽离出来放到一个单独的配置文件里，然后在入口文件引入即可。
-到此数据有了，但是与mysql不同的是不需要建表，只需要定义集合即可也就是一个js文件它就是一个资源对应的表，也就是说一个js文件就是一个集合(表)，操作集合也就是操作表了，所以很方便。
-* 设计集合(表)对应的schema，也就是数据的json结构
-    数据库连接存放到config配置文件夹，而设计的schema(模型)存放到models文件夹中。
-    主要用到mongoose的 Schema()类和model()方法
-    // 引入mongoose
-    const mongoose = require('mongoose')
-    // 可以解构出来也可以直接点运算符操作。
-    const schema =  new mongoose.Schema({
-        字段名:{字段类型约束，必要性约束等和mysql声明表结构时的约束是一样的}
-        username:{type:String,required:true},
-        email:{type:String},
-        password:{type:String},
-        avatar:{type:String},
+    // 引入数据库配置
+    const { MONGODB_CONF } = require('./config')
+    // 2.建立连接
+    try {
+      await mongoose.connect(MONGODB_CONF)
+    } catch (error) {
+      console.log("数据库连接失败",error)
+      throw error
+    }
+}
+// 然后在入口文件引入即可。
+require('./config/mongodbConfig')(app)
 
-    },{timestamps:true//添加时间戳})
+// 设计schema(模型)
+// 引入mongoose
+const mongoose = require('mongoose')
+// 定义schema方法
+const schema =  new mongoose.Schema({
+    // 字段名:{字段类型约束，必要性约束等和mysql声明表结构时的约束是一样的}
+    username:{type:String,require:true},
+    email:{type:String},
+    password:{type:String,require:true,},//select:false字段不显示
+    avatar:{type:String},
 
-    // 生成并导出集合对象User
-    module.exports = mongoose.model('User',schema)
+},{timestamps:true})
 
-    // 定义schema方法二 
-    // const {Schema,model} =mongoose
-    // const userSchema =  new Schema({
-    //     username:{type:String,required:true},
-    // })
-    // 导出集合对象User
-    // module.exports = model('User',userSchema)
+// 导出集合对象User
+module.exports = mongoose.model('User',schema)
+
+// 之后哪里需要引入集合对象就可以进行crud操作了和之前原生node、express学习一样的。
+
+```
 
 ## 3.11 koa认证与授权
 用户的认证和授权问题：认证就是让服务器知道你是谁，授权就是服务器知道你是谁后确认你能干什么，不能干什么。而这一切的源头是因为：HTTP协议是非连接性的，使用浏览器访问页面的内容会在关闭浏览器后丢失，HTTP链接也会断开，没有任何机制去记录访问的页面信息也就是会话信息。
