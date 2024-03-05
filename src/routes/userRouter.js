@@ -1,5 +1,5 @@
 // 引入路由对象
-const Router = require('koa-router')
+const Router = require('@koa/router')
 // 创建一个新的路由对象并设置前缀信息
 const router = new Router({
     // 设置路由前缀信息

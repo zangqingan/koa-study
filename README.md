@@ -548,12 +548,11 @@ ctx.verifyParams({
     age:{type:'number',require:true}
 })
 
-
 ```
 
 ## 3.8 koa路由中间件
-koa也可以有原生路由，实际是对node的url等模块的封装，在node里需要通过解析url的组成获取到path和http请求的方法类型。
-在koa中可以直接通过ctx.url获取url，ctx.method获取HTTP请求的方法继形成路由如下：
+koa也可以有原生路由，实际是对node的url等模块的封装，在node里需要通过解析url的组成获取到path和http请求的方法类型。在koa中可以直接通过ctx.url获取url，ctx.method获取HTTP请求的方法继形成路由如下
+```javaScript
 app.use(async ctx => {
     if(ctx.url === '/' && ctx.method === 'GET'){
         ctx.body = 'Hello World 主页get请求'
@@ -563,32 +562,38 @@ app.use(async ctx => {
         ctx.status = 404
     }
 
-});
-可以自己编写但是没必要重复造轮子，直接使用社区中的koa-router即可。
-在koa中路由的本质也是一个中间件(函数)，是用来决定不同的url被不同的中间件(异步处理函数)执行，只要路由命中就会执行对应的中间件。
-同时不同的HTTP请求方法也执行不一样的中间件。
-安装：npm i @koa/router 
-* koa-router路由中间件的使用
+})
+```
+也不同于express.Router()内容的路由功能、在koa里就是需要安装中间件来实现。
+在koa中路由的本质也是一个中间件(函数)，是用来决定不同的url被不同的中间件(异步处理函数)执行，只要路由命中就会执行对应的中间件。同时不同的HTTP请求方法也执行不一样的中间件。
+安装：`$ npm install @koa/router `、它是一个RESTful风格、Express-style routing的中间件。
+所以在使用上和express很类似、同样为了方便管理还是按照模块划分单独的路由文件、同时通过入口文件index.js批量自动注册即可。之后用法和express类似。
+```javaScript
     // 引入koa-router
-    const Router = require('koa-router')
+    const Router = require('@koa/router')
     // 实例化路由
     const router = new Router({
         //当url过长或者想方便替换都可以通过prefix配置前缀信息
-         prefix: '/api'
+        prefix: '/api'
     })
     module.exports = router
     // 在入口文件引入并注册路由中间件到app上，使用路由实例的routes()方法返回。
-    app.use(router.routes()).use(router.allowedMethods())或者分开写
-    app.use(router.routes())，不添加前缀
-    app.use(router.allowedMethods())，当所有路由中间件执行完成之后,如果ctx.status为空或者404时才会执行这个方法用来丰富响应头信息。 如：
-        相应地返回405(不允许即还没写)501(没实现即koa不支持的http方法)
-        响应options方法，告知它所支持的http请求方法类型有哪些
-    http的options方法作用如下：  
-        检测服务器支持的请求方法有哪些
-        cors(跨域)时预检请求
-    注意：当路由很多时一个一个在入口文件引入并注册明显过于繁琐且重复，所以需要一个中转者index.js
-    从引入注册步骤不难看出，第一需要根据路由文件所在路径引入，第二使用app.use注册，第三index.js不需要执行这些步骤而是由它在入口文件挂载执行。需要到node原生的fs模块即可。
-* koa路由增删改查响应
+    app.use(router.routes()).use(router.allowedMethods()) 
+    //或者分开写
+    app.use(router.routes())
+    app.use(router.allowedMethods())
+    // 当所有路由中间件执行完成之后,如果ctx.status为空或者404时才会执行这个方法用来丰富响应头信息。 
+    // 如：
+    //     相应地返回405(不允许即还没写)、501(没实现即koa不支持的http方法)
+    //     响应options方法，告知它所支持的http请求方法类型有哪些
+    // http的options方法作用如下：  
+    //     检测服务器支持的请求方法有哪些
+    //     cors(跨域)时预检请求
+
+    // 注意：当路由很多时一个一个在入口文件引入并注册明显过于繁琐且重复，所以需要一个中转者index.js
+    // 从引入注册步骤不难看出，第一需要根据路由文件所在路径引入，第二使用app.use注册，第三index.js不需要执行这些步骤而是由它在入口文件挂载执行。需要到node原生的fs模块即可。
+
+// koa路由增删改查响应
     router.get(),最好返回一个数组 [{},{},....]
     router.post(),返回新增的那个数据
     router.put(),返回新增的那个数据
@@ -596,8 +601,10 @@ app.use(async ctx => {
 注意：如果需要进行验证授权，只需将对应验证授权中间件放在路由对应中间件之前同时记得执行next即可。
 同时为了形成mvc模型，会将回调中间件抽离出来成控制器。
 
-* 路由参数获取
+// 路由参数获取
 在定义路由时使用 /:路由参数名，来表示一个路由参数，直接通过ctx.params获取它是一个对象，具体通过ctx.params.路由参数名 来获取指定的路由参数。
+
+```
 
 ## 3.9 koa控制器
 人为抽离的一个功能，拿到路由分配的任务并执行，本质也是一个中间件(函数)。其实就是命中路由时对应的回调函数，它可以获取HTTP请求的参数即前端传过来的数据如分页信息，每一页数据总条数，路由参数，请求体等，处理业务逻辑对数据库进行curd操作，发送HTTP响应返回给前端如状态码，响应头，响应体等。
