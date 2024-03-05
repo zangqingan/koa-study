@@ -435,18 +435,31 @@ app.use(require('@koa/cors')())
 koa本身是不能获取前端传过来的请求体数据的，但是通过安装第三方插件即可实现。
 有很多这样的中间件，比较常用的如：koa-bodyparser、koa-body等。
 但是推荐使用koa-body,因为它是一个功能齐全的koa体解析器中间件。
-支持multipart/form-data、urlencoded和json请求主体,还支持文件上传。
-注意的是要在路由注册前注册。
-安装语法：npm install koa-body
-    //在入口文件引入koa-bodyparser
-    const koaBody = require('koa-body');
-    //注册到app上
-    app.use(koaBody())
-在注册之后，就可以直接使用ctx.request.body 来获取前端传过来的请求体的值了。
-通常又使用JSON.stringify(ctx.request.body)将其转换成json字符串格式再返回。
-    //返回响应数据给前端
-    ctx.body = JSON.stringify(ctx.request.body);
-设置图片上传的目录
+支持解析:
+1. multipart/form-data
+2. application/x-www-form-urlencoded
+3. application/json
+4. application/json-patch+json
+5. application/vnd.api+json
+6. application/csp-report
+7. text/xml
+
+跟express使用的 body-parser 类似、也要注意要在路由注册前注册。
+安装语法：`$ npm install koa-body` 
+
+```javaScript
+ //在入口文件引入koa-bodyparser
+ const koaBody = require('koa-body');
+ //注册到app上
+ app.use(koaBody())
+ // 在注册之后，就可以直接使用ctx.request.body 来获取前端传过来的请求体的值了。
+ // 通常又使用JSON.stringify(ctx.request.body)将其转换成json字符串格式再返回。
+ //返回响应数据给前端
+app.use((ctx) => {
+    ctx.body = `Request Body: ${JSON.stringify(ctx.request.body)}`
+})
+
+ //  设置图片上传的目录
 const  path = require('path')
 app.use(koaBody({
     // 启用文件传输选项默认是false，因为文件的类型就是 multipart/form-data
@@ -459,8 +472,8 @@ app.use(koaBody({
         keepExtensions:true
     }
 }))
-设置这些配置之后，会在ctx.request.files.uploadfile 对象上挂载相关的文件信息。
-其中uploadfile是前端上传页面input元素的name属性定义的属性值，这里前后端要统一的，不然查找不到。
+// 设置这些配置之后，会在ctx.request.files.uploadfile 对象上挂载相关的文件信息。
+// 其中uploadfile是前端上传页面input元素的name属性定义的属性值，这里前后端要统一的，不然查找不到。
 uploadfile(上传文件对象)对象常见属性如下：
 {
     size: 上传文件的大小,
@@ -468,9 +481,13 @@ uploadfile(上传文件对象)对象常见属性如下：
     name: 'index.jpg' 上传文件名
     type: 'image/jpeg',上传文件类型
 }
-这时文件已经实现了上传，但是只能本地访问，如果想要使用http协议地址访问，就要使用koa静态资源托管服务。
-注意：虽然这个中间件也能实现文件上传，但是一般也不用，而是使用社区中其它轮子可以更加方便的实现一样的功能。
-如：koa-multer
+// 这时文件已经实现了上传，但是只能本地访问，如果想要使用http协议地址访问，就要使用koa静态资源托管服务。
+// 注意：虽然这个中间件也能实现文件上传，但是一般也不用，而是使用社区中其它轮子可以更加方便的实现一样的功能。
+// 如：koa-multer
+
+
+
+```
 
 ## 3.5 koa上传图片资源
 用户头像，封面图片等等主要是上传图片，生成图片链接，限制上传图片的大小类型

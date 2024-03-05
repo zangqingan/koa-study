@@ -59,6 +59,9 @@ app.use(require('@koa/cors')())
 // app.use(koaBody())
 // 缩写
 app.use(require('koa-body')())
+app.use((ctx) => {
+    ctx.body = `Request Body: ${JSON.stringify(ctx.request.body)}`
+})
 
 /* 日志start*/
 app.use(logger())
