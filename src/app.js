@@ -110,7 +110,7 @@ require('./config/mongodbConfig')(app)
 // app.use(userRouter.routes()).use(userRouter.allowedMethods())
 
 //很明显当路由很多时这样引入注册过于低级，使用中转者批量注册。
-require('./routers/index')(app)
+require('./routes/index')(app)
 
 
 /*错误处理中间件配置 */
@@ -137,7 +137,7 @@ app.use(error({
     // 如果生产环境就不返回错误堆栈
     postFormat:(e,{stack,...rest})  =>  process.env.NODE_ENV === 'production'?rest:{stack,...rest} })
 )
-
+app.
 
 
 /*挂载路由，业务代码，其它中间件等结束 */
