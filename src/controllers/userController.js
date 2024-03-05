@@ -31,7 +31,7 @@ class Users{
     const {username}= ctx.request.body
     const unione = await User.findOne({username})
     if(unione){ctx.throw(409,'用户名已存在请修改！')}
-    const result = await User.create(data)
+    const result = await User.create(ctx.request.body)
     ctx.body = result
 
   }

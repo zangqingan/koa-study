@@ -502,7 +502,7 @@ http://localhost:3000/uploadImage.html
 
 ```
 
-## 3.5 koa上传图片资源
+## 3.6 koa上传图片资源
 用户头像，封面图片等等主要是上传图片，生成图片链接，限制上传图片的大小类型。
 它本身就是基于express的multer中间件的所以用法类似。
 安装：`$ npm install --save koa-multer`
@@ -529,23 +529,27 @@ upload.single('filename')
     size: 18650
 }
 
-
 ```
 
-## 3.6 koa检验请求体参数中间件
-使用第三方中间件 koa-parameter 校验前端传过来的请求体中的数据是否符合类型要求了。注意要在请求体中间件后面注册，
-安装：$ npm install koa-parameter --save
+## 3.7 koa检验请求体参数中间件
+使用第三方中间件 koa-parameter 校验前端传过来的请求体中的数据是否符合类型要求了。
+它是对 parameter 这个包的再封装、所以具体的校验规则查看这个包的官网即可
+**注意:** 要在请求体中间件后面注册。
+安装：`$ npm install koa-parameter --save`
+```javaScript
 // parameter检验请求体参数
 const parameter = require('koa-parameter')
 // 注册到app实例，就会将parameter的verifyParams()方法挂载到ctx上
-parameter(app)，这种注册不会添加参数验证错误捕获中间件到app中。
-app.use(parameter(app))这样注册会添加参数验证错误捕获中间件到app中。
+parameter(app) //这种注册不会添加参数验证错误捕获中间件到app中。
+app.use(parameter(app)) // 这样注册会添加参数验证错误捕获中间件到app中、一般使用这个。
+// 会在ctx下挂载 verifyParams 参数用来校验params
 ctx.verifyParams({
     name:{type:'string',require:true},
     age:{type:'number',require:true}
 })
 
 
+```
 
 ## 3.8 koa路由中间件
 koa也可以有原生路由，实际是对node的url等模块的封装，在node里需要通过解析url的组成获取到path和http请求的方法类型。
