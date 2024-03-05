@@ -347,6 +347,28 @@ app.use(async (ctx, next) => { await next(); })
 
 # 四、常用Koa中间件学习
 
+## 3.1  dotenv
+它是一个零依赖模块，它将环境变量从.env文件加载到process.env变量中。
+安装:`$ npm install dotenv --save`、然后在根目录下新建一个 .env文件。
+
+```javaScript
+// .env
+APP_PORT=3000
+SECRET_KEY="YOURSECRETKEYGOESHERE"
+// 入口文件app.js
+require('dotenv').config()
+// 之后就可以通过 process.env 这个对象读取到.env文件中的内容
+console.log('env is',process.env)
+console.log('env is',process.env.APP_PORT)
+console.log('env is',process.env.SECRET_KEY)
+// 它可以接收一个配置对象选项
+require('dotenv').config({ 
+    path: '/custom/path/to/.env' // 指定路径下的 .env文件
+})
+
+
+```
+
 ## 3.2 koa环境变量设置中间件
 和express是一样的在window平台上通过cross-env中间件设置环境变量。
 当设置环境变量为 NODE_ENV=production 时，易造成 Windows 命令的阻塞。

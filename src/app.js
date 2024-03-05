@@ -5,7 +5,10 @@ const fs = require('fs')
 const  path = require('path')
 // 把env文件中的设置到process.env对象中
 require('dotenv').config()
-// console.log('env is',env)
+// console.log('env is',process.env)
+// console.log('env is',process.env.APP_PORT)
+// console.log('env is',process.env.SECRET_KEY)
+
 // 1.引入koa模块
 const Koa = require('koa')
 //2.实例化koa
@@ -137,13 +140,12 @@ app.use(error({
     // 如果生产环境就不返回错误堆栈
     postFormat:(e,{stack,...rest})  =>  process.env.NODE_ENV === 'production'?rest:{stack,...rest} })
 )
-app.
 
 
 /*挂载路由，业务代码，其它中间件等结束 */
 
 // 3.监听端口并开启服务
-app.listen(PORT,() => {
+app.listen( PORT,() => {
     console.log(`server is running on port ${PORT}`)
 })
 
