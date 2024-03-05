@@ -3,6 +3,7 @@ const logger = require('koa-logger')
 const morgan = require('koa-morgan')
 const fs = require('fs')
 const  path = require('path')
+
 // 把env文件中的设置到process.env对象中
 require('dotenv').config()
 // console.log('env is',process.env)
@@ -59,9 +60,9 @@ app.use(require('@koa/cors')())
 // app.use(koaBody())
 // 缩写
 app.use(require('koa-body')())
-app.use((ctx) => {
-    ctx.body = `Request Body: ${JSON.stringify(ctx.request.body)}`
-})
+// app.use((ctx) => {
+//     ctx.body = `Request Body: ${JSON.stringify(ctx.request.body)}`
+// })
 
 /* 日志start*/
 app.use(logger())
@@ -89,6 +90,7 @@ if (ENV !== 'dev') {
     }));
 }
 /* 日志end*/
+
 /* 检验请求体参数 */
 // const parameter = require('koa-parameter')
 // app.use(parameter(app))
@@ -96,13 +98,8 @@ if (ENV !== 'dev') {
 app.use(require('koa-parameter')(app))
 
 /* 静态资源托管服务 */
-//写法一
-// const koaStatic = require('koa-static')
-// app.use(koaStatic(
-//     path.join(__dirname,'public')
-// ))
-// 写法二，相对路径只能在当前app.js目录下启动koa服务，在其它目录会找不到静态资源服务目录
-app.use(require('koa-static')('public'))
+const serve = require('koa-static')
+app.use(serve('public'))
 
 /* 引入连接mongodb数据库的配置 */
 require('./config/mongodbConfig')(app)
