@@ -347,7 +347,7 @@ app.use(async (ctx, next) => { await next(); })
 
 # 四、常用Koa中间件学习
 
-## 3.1 dotenv
+## 4.1 dotenv
 它是一个零依赖模块，它将环境变量从.env文件加载到process.env变量中。
 安装:`$ npm install dotenv --save`、然后在根目录下新建一个 .env文件。
 
@@ -369,7 +369,7 @@ require('dotenv').config({
 
 ```
 
-## 3.2 cross-env
+## 4.2 cross-env
 和原生node、express是一样的在window平台上通过cross-env中间件设置环境变量。
 当设置环境变量为 NODE_ENV=production 时，易造成 Windows 命令的阻塞。
 在运行时，脚本通过检查 process.env.NODE_ENV 查找该值。通过 NODE_ENV 的值 判断服务器应在 开发 还是 生产模式下运行。
@@ -386,7 +386,7 @@ require('dotenv').config({
 ```
 
 
-## 3.3 cors 跨域处理中间件
+## 4.3 cors 跨域处理中间件
 koa也可以自己编写原生跨域中间件，本质其实就是设置http头部信息。
 不过一般使用社区提供的中间件
 1. 自定义跨越处理中间件
@@ -431,7 +431,7 @@ app.use(require('@koa/cors')())
 
 ```
 
-## 3.4 koa处理请求体中间件
+## 4.4 koa处理请求体中间件
 koa本身是不能获取前端传过来的请求体数据的，但是通过安装第三方插件即可实现。
 有很多这样的中间件，比较常用的如：koa-bodyparser、koa-body等。
 但是推荐使用koa-body,因为它是一个功能齐全的koa体解析器中间件。
@@ -489,7 +489,7 @@ uploadfile(上传文件对象)对象常见属性如下：
 
 ```
 
-## 3.5 koa静态资源托管中间件
+## 4.5 koa静态资源托管中间件
 与express使用内置的 express.static()方法提供静态资源托管不同、koa需要使用中间件来实现。
 可以使用koa-static中间件设置静态资源服务目录,然后就可以通过网络请求访问这个静态资源目录里所有的资源。
 安装：`$ npm install koa-static`、用法跟express.static()类似。
@@ -502,7 +502,7 @@ http://localhost:3000/uploadImage.html
 
 ```
 
-## 3.6 koa上传图片资源
+## 4.6 koa上传图片资源
 用户头像，封面图片等等主要是上传图片，生成图片链接，限制上传图片的大小类型。
 它本身就是基于express的multer中间件的所以用法类似。
 安装：`$ npm install --save koa-multer`
@@ -531,7 +531,7 @@ upload.single('filename')
 
 ```
 
-## 3.7 koa检验请求体参数中间件
+## 4.7 koa检验请求体参数中间件
 使用第三方中间件 koa-parameter 校验前端传过来的请求体中的数据是否符合类型要求了。
 它是对 parameter 这个包的再封装、所以具体的校验规则查看这个包的官网即可
 **注意:** 要在请求体中间件后面注册。
@@ -550,7 +550,7 @@ ctx.verifyParams({
 
 ```
 
-## 3.8 koa路由中间件
+## 4.8 koa路由中间件
 koa也可以有原生路由，实际是对node的url等模块的封装，在node里需要通过解析url的组成获取到path和http请求的方法类型。在koa中可以直接通过ctx.url获取url，ctx.method获取HTTP请求的方法继形成路由如下
 ```javaScript
 app.use(async ctx => {
@@ -606,14 +606,14 @@ app.use(async ctx => {
 
 ```
 
-## 3.9 koa控制器
+## 4.9 koa控制器
 人为抽离的一个功能，拿到路由分配的任务并执行，本质也是一个中间件(函数)。其实就是命中路由时对应的回调函数，它可以获取HTTP请求的参数即前端传过来的数据如分页信息，每一页数据总条数，路由参数，请求体等，处理业务逻辑对数据库进行curd操作，发送HTTP响应返回给前端如状态码，响应头，响应体等。
 每个资源的控制器分别存放controllers文件夹里的不同js文件中，将路由和具体实现分离出来。
 在使用es5时是定义一个一个函数并导出，而在使用es6后将这些函数封装成类和类方法来实现控制器，导出的是类的实例对象。
 同时对数据的 crud 操作也是放到这里实现。
 
-## 3.10 koa操作数据库中间件
-
+## 4.10 koa操作数据库中间件
+和原生node、express一样。
 ### 1.mongodb
 和原生node和express一样在koa中也是通过第三方插件 mongoose 实现对mongodb数据库的crud操作。
 安装:`$ npm i mongoose`、用法都是类似的、数据库的连接抽离出来、每一个集合放一个文件里。
@@ -655,62 +655,11 @@ module.exports = mongoose.model('User',schema)
 
 ```
 
-## 3.11 koa认证与授权
-用户的认证和授权问题：认证就是让服务器知道你是谁，授权就是服务器知道你是谁后确认你能干什么，不能干什么。而这一切的源头是因为：HTTP协议是非连接性的，使用浏览器访问页面的内容会在关闭浏览器后丢失，HTTP链接也会断开，没有任何机制去记录访问的页面信息也就是会话信息。
-所以必须要有一种机制让页面知道原来页面的会话内容，这也是session的原理。
-    认证：在服务器端对客户端传回来的token进行验证并获取用户信息
-    授权：使用中间件保护接口，即不同的用户只能访问不同的接口。
-* 传统的cookie和session
-    session在计算机中，尤其是在网络应用中，称为“会话控制”。
-    意思是当用户使用浏览器访问网页向服务器通信的时候，服务器会在内存里(或者redis中)开辟一块内存区域用来存储了当前用户会话相关的属性及配置信息，这块内存区域就叫做session，它本质是一个对象。
-    然后服务器会将其引用地址通过响应头的set-cookie字段返回给客户端，客户端一般将这个值命名为sessionid并存储在cookie中(这是一种方法)，而cookie是浏览器中一个可以保存数据的内存区域。
-    此后用户再向服务器端请求时都会在请求头的cookie字段携带这个sessionid发给服务器，服务器根据sessionid在自己内存里找到唯一对应的内存区域即session对象并解析，解析后就知道当前用户的权限能干什么不能干什么最后将信息再次返回给前端。
-    客户端要退出当前会话只需要把cookie清空即可，或者在服务器主动清除session。
+### 2.mysql
+### 3.redis
 
-    优点：
-        相比于jwt，session可以被服务器主动清除。
-        session保存在服务器端，相对更加安全。
-        和浏览器的cookie结合使用，比较灵活，兼容比较好。
-    缺点：
-        cookie+session在跨域场景中不好，因为cookie不可跨域。
-        如果是分布式部署，需要做多机session共享机制
-        基于cookie的机制很容易被CSRF攻击
-    客户端存储数据的方法：
-        sessionStorage：仅在当前会话有效，关闭页面或关闭浏览器就会被清除。
-        localStorage：除非被手动清除不然永久存在，jwt生成的token(令牌)就一般存储在这里。
-
-* JWT
-    JWT是json web token的缩写，它是RFC(网络请求意见稿)的一个开放标准RFC7519。
-    它定义了一种紧凑且独立的方式，用来将各方之间的信息作为JSON对象进行安全传输。
-    该信息是可以被验证和信任的，因为这个信息是经过数字签名的。它也是为了实现客户端和服务器端之前的鉴权和认证的一种方法，本质是一串字符串。
-
-    JWT构成：头部(header)+有效载荷(payload)+签名(signature)，它们之间使用 . 分隔。
-
-    头部(header)：本质是一个json有两个字段，在生成token时使用 base64 进行了编码。
-        typ(type):token(令牌)的类型，这里固定是JWT
-        alg(algorithm):使用何种hash算法加密，如RSA，SHA256等
-    类似：{"typ":"JWT","alg":"HS256"} base64 编码后就变成了一堆字符串如下：'eyjhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9'
-
-    有效载荷(payload)：本质也是一个json，字段是真实存储需要传递的信息，如用户id，用户名等。还有一个元数据信息，如过期时间，发布人等等。与header不同，除了base64编码外有效载荷还可以再次进行加密。
-    类似：{"user_id":"zhangsan"} base64url 编码后如下： 'eyJ1c2VyX2lkIjoiemhhbmdzYM4ifQ'
-
-    签名(signature)：对头部和有效载荷这两部分进行签名(即使用密钥再加密一次)，目的是保证token在传输的过程中没有被篡改或者损坏。而且在签名之后还要再进行一次base64编码。
-    完整的签名算法是：signature = HMACSHA256(base64UrlEncode(header) + '.' + base64UrlEncode(payload),secret密钥)
-
-    JWT工作流程：
-    首先客户端向服务器发送请求时会携带有效载荷，服务器端接收到后进行验证，验证成功就将需要返回的信息加入到有效载荷中，再对有效载荷和jwt头部一起进行base64编码。
-    然后使用密钥对编码之后的有效载荷和jwt头部进行签名，签名完成之后再进行一次base64编码就形成一个token(令牌本质就是一串字符串)返回给客户端。{token:'xxxx'}
-    最后客户端将token保存在localStorage或者sessionStorage中，在下次请求时在请求头中的 authorization字段带上这个token就可以验证用户信息了。
-    而退出只需要将token删除即可，也就是将localStorage或者sessionStorage中的token删除。
-    而前端对localStorage或者sessionStorage的操作都是有浏览器提供的api接口的。
-
-* JWT和session比较
-    可扩展性，jwt更好不需要在服务器端存储token。
-    安全性，都有可能会遭受攻击，要自己注意防范，不要把重要信息放在token里。
-    性能，jwt存储大量信息时开销比较大，而session多时后端也需要根据id查找。
-    时效性，jwt差一点，而session可以在服务器端主动删除。
-
-* 在nodejs中使用JWT
+## 4.11 koa认证与授权
+在nodejs中使用JWT
     方法一：在nodejs中通过第三方库jsonwebtoken来实现签名生成token。
     安装：npm i jsonwebtoken
     引入：const jsonwebtoken = require('jsonwebtoken')
@@ -735,7 +684,7 @@ module.exports = mongoose.model('User',schema)
     Bearer:送信人的意思
     后端获取前端返回的token就很简单了，从ctx.request.header对象中解构authorization出来即可，注意请求头中的字段都会变为小写的。
 
-    方法二：使用koa-jwt中间件这个中间件还可以和其它组合使用，具体看文档。
+方法二：使用koa-jwt中间件这个中间件还可以和其它组合使用，具体看文档。
     这个中间件只是用来认证的，生成token用的还是jsonwebtoken这个中间件。
     由于 koa-jwt 从 koa-v2 分支开始不再导出 jsonwebtoken 的 sign 、 verify 和 decode 方法，若要单独生成 token 、验证 token 等，需另从 jsonwebtoken 中将其引入：
     安装：npm i koa-jwt
@@ -743,7 +692,7 @@ module.exports = mongoose.model('User',schema)
     const auth = jwt({secret}) 这样就生成了一个认证中间件了
     验证后的信息也是挂载到ctx.state.user上的。
 
-## 3.12 koa日志管理中间件
+## 4.12 koa日志管理中间件
 使用koa-logger控制台输出，使用koa-morgan输出到文件中。
 1.koa-logger它是一个development style logger，默认Transporter是console输出的，可以自定义。
 安装：$ npm install koa-logger
@@ -761,7 +710,7 @@ const accessLogWriteStream = fs.createWriteStream(logFileName, {flags: 'a'})
 //使用morgan写入
 app.use(morgan('combined', { stream: accessLogWriteStream }))
 
-## 3.13 koa错误处理中间件
+## 4.13 koa错误处理中间件
 错误处理是编程语言里的一种机制，用来处理软件或信息系统中出现的异常状况，防止程序挂掉。
 告诉开发者哪里出错了，错误信息是什么，以便于开发者调试。
 一般错误信息会保存到一个文件中，所有文件的读写操作常常会一起使用。
@@ -790,12 +739,7 @@ app.use(error({
     }
 }))
 
-## 3.14 koa配置读取中间件
-dotenv是一个零依赖模块，它将环境变量从.env文件加载到process.env中。
-这样在其它文件中就可以通过 process.env.环境变量名 来访问指定的环境变量了。
-安装：npm install dotenv
-在根目录下创建一个 .env文件在里面保存要传入process.env对象的字段名
-在要使用的地方引入：require('dotenv').config()
+
 
 
 
